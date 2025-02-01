@@ -4,7 +4,7 @@
 ## Introduction
 Welcome to the Chat Assistant! This is a simple Chat Assistant built using Flask and SQLite. It allows users to interact with an employee database using natural language queries. The assistant understands and responds to common queries related to employees, departments, managers, and salaries.
 
-![Chat Assistant Screen](assets/Forntpage.png)
+![Chat Assistant Screen](chat_assisment/assets/Forntpage.png)
 
 ## Features ✨
 💼 Fetch a list of employees from a specific department.
