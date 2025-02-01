@@ -31,7 +31,7 @@ def query_database():
 
     conn = connect_db()
     cursor = conn.cursor()
-    response = {"message": "I didn't understand your query."}
+    response = {"message": "I didn't understand your query , explain further."}
 
     try:
         # Query 1:
