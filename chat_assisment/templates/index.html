@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2C3E50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .intro-text {
+            color: #526275;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        #queryForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            color: #2C3E50;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E0E7FF;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #F8FAFF;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6B73FF;
+            box-shadow: 0 0 0 3px rgba(107, 115, 255, 0.2);
+        }
+
+        button {
+            background: #6B73FF;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #5158CC;
+            transform: translateY(-2px);
+        }
+
+        #response {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #F8FAFF;
+            min-height: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #E0E7FF;
+        }
+
+        th {
+            background: #6B73FF;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #F8FAFF;
+        }
+
+        h3 {
+            color: #2C3E50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h1>AI Chat Assistant</h1>
+            <p class="intro-text">Ask me anything! I'm here to help you find the information you need.</p>
+            <form id="queryForm">
+                <label for="query">Your Question:</label>
+                <input type="text" id="query" name="query" placeholder="Type your question here..." required>
+                <button type="submit">Get Answer</button>
+            </form>
+
+            <div id="response">
+                <!-- The response will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("queryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var query = document.getElementById("query").value;
+            fetch("/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let responseDiv = document.getElementById("response");
+                responseDiv.innerHTML = '';
+                if (data.employees) {
+                    responseDiv.innerHTML = `
+                        <h3>Employees Found</h3>
+                        <table>
+                            <thead>
+                                <tr><th>Employee Name</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.employees.map(employee => `<tr><td>${employee}</td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else if (data.manager) {
+                    responseDiv.innerHTML = `<h3>Manager Information</h3><p>${data.manager}</p>`;
+                } else if (data.total_salary) {
+                    responseDiv.innerHTML = `<h3>Total Salary Information</h3><p>${data.total_salary}</p>`;
+                } else if (data.message) {
+                    responseDiv.innerHTML = `<p>${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("response").innerHTML = `
+                    <p style="color: #FF4444;">Sorry, there was an error processing your request. Please try again.</p>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
