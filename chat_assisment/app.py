@@ -6,10 +6,7 @@ app = Flask(__name__)
 
 
 def connect_db():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "chat_assistant.db")
-    return sqlite3.connect(db_path)
-
+    return sqlite3.connect("chat_assistant.db")
 
 def is_valid_date(date_str):
     try:
